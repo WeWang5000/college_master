@@ -1,6 +1,7 @@
 // screens/IntroScreen.js
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Image } from 'react-native';
 
 export default function IntroScreen({ navigation }) {
   const handleTryPress = () => {
@@ -17,8 +18,9 @@ export default function IntroScreen({ navigation }) {
       {/* Circular Image Placeholder */}
       <View style={styles.circle}>
         <Image
-          source={require('../assets/logo.png')} // Replace with your actual image path
+          source={require('../assets/dancingracco.gif')} // Replace with your GIF path
           style={styles.circleImage}
+        //   resizeMode={FastImage.resizeMode.cover} // Adjust as needed
         />
       </View>
 
@@ -65,8 +67,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 40,
     backgroundColor: '#123524',
-    paddingVertical: 15,
-    paddingHorizontal: 40,
+    paddingVertical: 20,
+    paddingHorizontal: 120,
     borderRadius: 25,
     alignItems: 'center',
   },

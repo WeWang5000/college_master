@@ -12,8 +12,8 @@ export default function HomeworkScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.question}>What homework question are we answering?</Text>
-      <Text style={styles.hint}>More specific is better!{'\n'}e.g. the name of the course, lecture notes or chapter</Text>
+      <Text style={styles.question}>What’s the {'\n'}MOST pressing issue{'\n'} you're facing?</Text>
+      <Text style={styles.hint}>More specific is better!{'\n'}Describe when it happens, what it involves, how it affects you, your thoughts, and how it makes you feel.</Text>
 
       {/* Text Input Field */}
       <TextInput
@@ -33,53 +33,55 @@ export default function HomeworkScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f4f2e3',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingBottom: 50,
-  },
-  question: {
-    fontSize: 24,
-    color: '#123524',
-    fontWeight: 'bold',
-    fontFamily: 'ChalkboardSE-Bold',
-    textAlign: 'center',
-    marginBottom: 10,
-  },
-  hint: {
-    fontSize: 14,
-    color: '#888888',
-    fontFamily: 'ChalkboardSE-Regular',
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  input: {
-    backgroundColor: '#e8f0e3',
-    width: '80%',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 10,
-    fontSize: 18,
-    color: '#123524',
-    fontFamily: 'ChalkboardSE-Regular',
-    marginBottom: 40,
-    textAlign: 'left',
-  },
-  nextButton: {
-    position: 'absolute',
-    bottom: 40,
-    backgroundColor: '#123524',
-    paddingVertical: 15,
-    paddingHorizontal: 40,
-    borderRadius: 25,
-    alignItems: 'center',
-  },
-  nextButtonText: {
-    color: '#ffffff',
-    fontSize: 18,
-    fontWeight: 'bold',
-    fontFamily: 'ChalkboardSE-Regular',
-  },
-});
+    container: {
+      flex: 1,
+      backgroundColor: '#f4f2e3',
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingBottom: 50,
+    },
+    question: {
+      fontSize: 32, // Increase font size for larger title
+      color: '#123524',
+      fontWeight: 'bold',
+      fontFamily: 'ChalkboardSE-Bold',
+      textAlign: 'center',
+      marginBottom: 15, // Increase spacing below the title
+      lineHeight: 40, // Add line height for better readability
+    },
+    hint: {
+      fontSize: 14,
+      color: '#888888',
+      fontFamily: 'ChalkboardSE-Regular',
+      textAlign: 'center',
+      marginBottom: 20,
+    },
+    input: {
+      backgroundColor: '#e8f0e3',
+      width: '80%',
+      paddingVertical: 12,
+      paddingHorizontal: 16,
+      borderRadius: 10,
+      fontSize: 18,
+      color: '#123524',
+      fontFamily: 'ChalkboardSE-Regular',
+      marginBottom: 40,
+      textAlign: 'left',
+    },
+    nextButton: {
+      position: 'absolute',
+      bottom: 40,
+      backgroundColor: '#123524',
+      paddingVertical: 20,
+      paddingHorizontal: 170,
+      borderRadius: 25,
+      alignItems: 'center',
+    },
+    nextButtonText: {
+      color: '#ffffff',
+      fontSize: 18,
+      fontWeight: 'bold',
+      fontFamily: 'ChalkboardSE-Regular',
+    },
+  });
+  

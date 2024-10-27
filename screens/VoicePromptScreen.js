@@ -1,33 +1,24 @@
 // screens/VoicePromptScreen.js
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; // For microphone icon
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { sendAudioToProxy } from '../services/openaiService';
 
-export default function VoicePromptScreen({ navigation }) {
-  const handleMicPress = () => {
+export default function VoicePromptScreen() {
+  const handleMicPress = async () => {
     console.log('Microphone button pressed');
-    // Add logic to start recording or navigate to the next screen
+    const dummyAudioData = new Uint8Array([/* example audio bytes */]); // Replace with actual audio data
+    try {
+      const response = await sendAudioToProxy(dummyAudioData);
+      console.log('Received response:', response);
+    } catch (error) {
+      console.error('Failed to receive response:', error);
+    }
   };
 
   return (
     <View style={styles.container}>
-      {/* Prompt Text */}
-      <Text style={styles.promptText}>
-        Explain chemical reactions to me like I'm 5!
-      </Text>
-
-      {/* Circular Image Placeholder */}
-      <View style={styles.circle}>
-        <Image
-          source={require('../assets/logo.png')} // Replace with actual image path if needed
-          style={styles.circleImage}
-        />
-      </View>
-
-      {/* Tap to Speak Hint */}
-      <Text style={styles.speakHint}>Tap to start talking...</Text>
-
-      {/* Microphone Button */}
+      <Text style={styles.promptText}>Explain chemical reactions to me like I'm 5!</Text>
       <TouchableOpacity style={styles.micButton} onPress={handleMicPress}>
         <Ionicons name="mic" size={24} color="#ffffff" />
       </TouchableOpacity>
@@ -36,47 +27,7 @@ export default function VoicePromptScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f4f2e3',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingBottom: 50,
-  },
-  promptText: {
-    fontSize: 22,
-    color: '#123524',
-    fontWeight: 'bold',
-    fontFamily: 'ChalkboardSE-Bold',
-    textAlign: 'center',
-    marginBottom: 20,
-    paddingHorizontal: 20,
-  },
-  circle: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: '#3b5998', // Example blue color
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 40,
-  },
-  circleImage: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 60,
-  },
-  speakHint: {
-    fontSize: 16,
-    color: '#a9a9a9',
-    fontFamily: 'ChalkboardSE-Regular',
-    marginBottom: 20,
-  },
-  micButton: {
-    backgroundColor: '#123524',
-    padding: 15,
-    borderRadius: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  container: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  promptText: { fontSize: 22, textAlign: 'center', marginBottom: 20 },
+  micButton: { backgroundColor: '#123524', padding: 15, borderRadius: 30 },
 });
