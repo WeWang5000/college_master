@@ -12,7 +12,7 @@ export default function IntroScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <Text style={styles.introText}>
-        Hi! My name is Feynman. I’m here to help you ace your exam.
+        Hi! My name is bobby. {'\n'} I'm here to help
       </Text>
 
       {/* Circular Image Placeholder */}

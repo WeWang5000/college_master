@@ -9,9 +9,9 @@ export default function LandingScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Image source={require('../assets/logo.png')} style={styles.logo} />
-      <Text style={styles.title}>FeynmanAI</Text>
-      <Text style={styles.subtitle}>explain like i'm five</Text>
+      <Image source={require('../assets/college_master2.png')} style={styles.logo} />
+      <Text style={styles.title}>WishIknewAI</Text>
+      <Text style={styles.subtitle}>Ultimate College Problem Therapy</Text>
 
       <TouchableOpacity style={styles.button} onPress={handlePress}>
         <Text style={styles.buttonText}>Get Started</Text>
@@ -29,8 +29,8 @@ const styles = StyleSheet.create({
       paddingBottom: 50, // Space for the button at the bottom
     },
     logo: {
-      width: 100, // Adjust size to match your desired layout
-      height: 100, // Adjust size to match your desired layout
+      width: 150, // Adjust size to match your desired layout
+      height: 150, // Adjust size to match your desired layout
       marginBottom: 20,
     },
     title: {
