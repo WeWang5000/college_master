@@ -1,8 +1,12 @@
+// ReviewScreen.js
 import React from 'react';
 import { View, Image, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import * as Haptics from 'expo-haptics';
 
 export default function ReviewScreen({ navigation }) {
   const handleReviewPress = () => {
+    // Trigger haptic feedback
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     navigation.navigate('Goals');
   };
 
@@ -28,9 +32,9 @@ const styles = StyleSheet.create({
     paddingBottom: 50,
   },
   fullImage: {
-    width: '110%', // or any specific width like 300
-    height: undefined, // let the image resize proportionally
-    aspectRatio: 1, // or adjust as needed to fit the screen
+    width: '110%',
+    height: undefined,
+    aspectRatio: 1,
     marginBottom: 20,
     marginLeft: 18,
   },

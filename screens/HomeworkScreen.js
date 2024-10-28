@@ -2,17 +2,25 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Modal, TouchableWithoutFeedback } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import * as Haptics from 'expo-haptics';
 
 export default function HomeworkScreen({ navigation }) {
   const [input, setInput] = useState('');
   const [isModalVisible, setModalVisible] = useState(false);
 
   const handleNextPress = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); // Haptic feedback for Next button
     navigation.navigate('Intro');
   };
 
   const toggleModal = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); // Haptic feedback for Settings button
     setModalVisible(!isModalVisible);
+  };
+
+  const handleOptionPress = (message) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); // Haptic feedback for modal options
+    alert(message);
   };
 
   return (
@@ -52,16 +60,16 @@ export default function HomeworkScreen({ navigation }) {
           <View style={styles.modalBackground}>
             <TouchableWithoutFeedback>
               <View style={styles.modalContent}>
-                <TouchableOpacity onPress={() => alert('Go Pro')}>
+                <TouchableOpacity onPress={() => handleOptionPress('Go Pro')}>
                   <Text style={styles.modalOption}>📚 Go Pro</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => alert('Contact Support')}>
+                <TouchableOpacity onPress={() => handleOptionPress('Contact Support')}>
                   <Text style={styles.modalOption}>✉️ Contact Support</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => alert('Privacy')}>
+                <TouchableOpacity onPress={() => handleOptionPress('Privacy')}>
                   <Text style={styles.modalOption}>🔒 Privacy</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => alert('Terms')}>
+                <TouchableOpacity onPress={() => handleOptionPress('Terms')}>
                   <Text style={styles.modalOption}>📝 Terms</Text>
                 </TouchableOpacity>
               </View>
@@ -132,7 +140,7 @@ const styles = StyleSheet.create({
   modalBackground: {
     flex: 1,
     justifyContent: 'flex-end',
-    backgroundColor: 'transparent', // Adds a dim background
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Dim background for modal
   },
   modalContent: {
     backgroundColor: '#123524',

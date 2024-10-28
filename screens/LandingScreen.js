@@ -1,9 +1,12 @@
 // LandingScreen.js
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import * as Haptics from 'expo-haptics';
 
 export default function LandingScreen({ navigation }) {
   const handlePress = () => {
+    // Trigger haptic feedback
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     navigation.navigate('Review');
   };
 
@@ -21,44 +24,43 @@ export default function LandingScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#f4f2e3', // Light beige background color
-      alignItems: 'center',
-      justifyContent: 'center',
-      paddingBottom: 50, // Space for the button at the bottom
-    },
-    logo: {
-      width: 150, // Adjust size to match your desired layout
-      height: 150, // Adjust size to match your desired layout
-      marginBottom: 20,
-    },
-    title: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      color: '#000000',
-      fontFamily: 'ChalkboardSE-Bold', // Optional font customization
-    },
-    subtitle: {
-      fontSize: 18,
-      color: '#555555',
-      fontFamily: 'ChalkboardSE-Regular', // Optional font customization
-      marginBottom: 40, // Space between text and button
-    },
-    button: {
-      position: 'absolute',
-      bottom: 40,
-      backgroundColor: '#123524', // Dark green background color
-      paddingVertical: 20, // Increased padding for height
-      paddingHorizontal: 120, // Increased padding for width
-      borderRadius: 30, // Larger radius for a more rounded button
-      alignItems: 'center',
-    },
-    buttonText: {
-      color: '#ffffff',
-      fontSize: 20, // Slightly larger font size
-      fontWeight: 'bold',
-      fontFamily: 'ChalkboardSE-Regular', // Optional font customization
-    },
-  });
-  
+  container: {
+    flex: 1,
+    backgroundColor: '#f4f2e3',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingBottom: 50,
+  },
+  logo: {
+    width: 150,
+    height: 150,
+    marginBottom: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#000000',
+    fontFamily: 'ChalkboardSE-Bold',
+  },
+  subtitle: {
+    fontSize: 18,
+    color: '#555555',
+    fontFamily: 'ChalkboardSE-Regular',
+    marginBottom: 40,
+  },
+  button: {
+    position: 'absolute',
+    bottom: 40,
+    backgroundColor: '#123524',
+    paddingVertical: 20,
+    paddingHorizontal: 120,
+    borderRadius: 30,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#ffffff',
+    fontSize: 20,
+    fontWeight: 'bold',
+    fontFamily: 'ChalkboardSE-Regular',
+  },
+});

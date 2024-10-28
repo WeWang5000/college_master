@@ -1,5 +1,7 @@
+// GoalsScreen.js
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
+import * as Haptics from 'expo-haptics';
 
 export default function GoalsScreen({ navigation }) {
   const [selectedGoals, setSelectedGoals] = useState([]);
@@ -19,6 +21,7 @@ export default function GoalsScreen({ navigation }) {
   ];
 
   const toggleGoalSelection = (id) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); // Trigger haptic feedback
     setSelectedGoals((prevSelected) =>
       prevSelected.includes(id)
         ? prevSelected.filter((goalId) => goalId !== id)
@@ -27,6 +30,7 @@ export default function GoalsScreen({ navigation }) {
   };
 
   const handleNextPress = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); // Trigger haptic feedback
     navigation.navigate('Homework');
   };
 
@@ -76,7 +80,7 @@ const styles = StyleSheet.create({
     color: '#123524',
     fontWeight: 'bold',
     fontFamily: 'ChalkboardSE-Bold',
-    marginTop: 20, // Add top margin to ensure it's visible
+    marginTop: 20,
     marginBottom: 30,
     textAlign: 'center',
     width: '80%',
@@ -115,8 +119,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 170,
     borderRadius: 25,
     alignItems: 'center',
-    marginTop: 20, // Add some spacing above the button
-    marginBottom: 40, // Ensure spacing at the bottom of scroll
+    marginTop: 20,
+    marginBottom: 40,
   },
   nextButtonText: {
     color: '#ffffff',

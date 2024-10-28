@@ -1,18 +1,18 @@
 // screens/IntroScreen.js
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import * as Haptics from 'expo-haptics';
 
 export default function IntroScreen({ navigation }) {
   const handleTryPress = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); // Haptic feedback for Try Button
     navigation.navigate('VoicePrompt');
-    // Navigate to the next screen or start the trial process if needed
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.introText}>
-        Hi! My name is bobby. {'\n'} I'm here to help
+        Hi! My name is Bobby. {'\n'} I'm here to help
       </Text>
 
       {/* Circular Image Placeholder */}
@@ -20,7 +20,6 @@ export default function IntroScreen({ navigation }) {
         <Image
           source={require('../assets/dancingracco.gif')} // Replace with your GIF path
           style={styles.circleImage}
-        //   resizeMode={FastImage.resizeMode.cover} // Adjust as needed
         />
       </View>
 
