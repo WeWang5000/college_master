@@ -1,6 +1,6 @@
 // screens/VoicePromptScreen.js
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
 import { sendAudioToProxy } from '../services/openaiService';
@@ -71,16 +71,21 @@ export default function VoicePromptScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.promptText}>Explain chemical reactions to me like I'm 5!</Text>
+      <Text style={styles.headerText}>👋 Tell me more about the issue you're facing</Text>
+      <View style={styles.mainCircleContainer}>
+        <Image source={require('../assets/bobby.png')} style={styles.bobbyImage} />
+      </View>
       <TouchableOpacity style={styles.micButton} onPress={handleMicPress}>
-        <Ionicons name="mic" size={24} color="#ffffff" />
+        <Ionicons name="mic" size={32} color="#ffffff" />
       </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  promptText: { fontSize: 22, textAlign: 'center', marginBottom: 20 },
-  micButton: { backgroundColor: '#123524', padding: 15, borderRadius: 30 },
+  container: { flex: 1, alignItems: 'center', paddingTop: 80, backgroundColor: '#f4f2e3' },
+  headerText: { fontSize: 24, fontWeight: 'bold', marginBottom: 30, color: '#333', textAlign: 'center' },
+  mainCircleContainer: { flex: 1, justifyContent: 'flex-start', alignItems: 'center', marginTop: 0 },
+  bobbyImage: { width: 350, height: 350, resizeMode: 'contain', marginTop: 100 },
+  micButton: { backgroundColor: '#32CD32', padding: 25, borderRadius: 50, position: 'absolute', bottom: 40 },
 });
