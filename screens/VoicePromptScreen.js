@@ -4,10 +4,44 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
 import { sendAudioToProxy } from '../services/openaiService';
+import {UserDataContext } from '../utils/UserDataContext';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import io from 'socket.io-client';
 
-export default function VoicePromptScreen() {
+export default function VoicePromptScreen({ navigation }) {
   const [recording, setRecording] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
+  const {userInfo, setUserInfo, setUserCustomer, versionInfo, setVersionInfo} = React.useContext(UserDataContext);
+  const socket = io('http://127.0.0.1:5001/my--auth-f3201/us-central1/http_connect'); // 替换为你的 Firebase Functions URL
+
+  React.useEffect(() => {
+    let uid = Date.now().toString();
+    if(userInfo != null && userInfo.uid !== null) {
+      uid = userInfo.uid;
+    }
+    // 连接到服务器并传递 uid
+    socket.emit('connect', { uid: uid });
+
+    socket.on('response', (data) => {
+      if (data.message) {
+        console.log(data.message);
+        // setResponses((prevResponses) => [...prevResponses, data.message]);
+      }
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [])
+
+  const signOut = async() => {
+    setUserInfo(null);
+    setUserCustomer(null);
+    await AsyncStorage.removeItem("@user");
+    await AsyncStorage.removeItem("@customer");
+    await AsyncStorage.clear();
+    navigation.reset({index: 0, routes: [{ name: 'Landing' }]});
+  }
 
   const startRecording = async () => {
     try {
@@ -75,6 +109,10 @@ export default function VoicePromptScreen() {
       <TouchableOpacity style={styles.micButton} onPress={handleMicPress}>
         <Ionicons name="mic" size={24} color="#ffffff" />
       </TouchableOpacity>
+
+      <TouchableOpacity style={styles.tryButton} onPress={signOut}>
+        <Text style={styles.tryButtonText}>SignOut</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -83,4 +121,19 @@ const styles = StyleSheet.create({
   container: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   promptText: { fontSize: 22, textAlign: 'center', marginBottom: 20 },
   micButton: { backgroundColor: '#123524', padding: 15, borderRadius: 30 },
+  tryButton: {
+    position: 'absolute',
+    bottom: 40,
+    backgroundColor: '#123524',
+    paddingVertical: 20,
+    paddingHorizontal: 120,
+    borderRadius: 25,
+    alignItems: 'center',
+  },
+  tryButtonText: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: 'bold',
+    fontFamily: 'ChalkboardSE-Regular',
+  },
 });

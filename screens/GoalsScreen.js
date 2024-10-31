@@ -30,7 +30,7 @@ export default function GoalsScreen({ navigation }) {
   };
 
   const handleNextPress = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); // Trigger haptic feedback
+    // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); // Trigger haptic feedback
     navigation.navigate('Homework');
   };
 

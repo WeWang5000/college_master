@@ -1,18 +1,19 @@
 {
   "expo": {
-    "name": "college_master2",
-    "slug": "college_master2",
-    "version": "1.0.0",
+    "name": "WishIKnew",
+    "slug": "WishIKnew",
+    "version": "1.0.2",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/college_master.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/college_master.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.WK.wishiknew"
     },
     "android": {
       "adaptiveIcon": {
@@ -22,6 +23,7 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "scheme": "wishiknew"
   }
 }

@@ -1,12 +1,83 @@
 // screens/IntroScreen.js
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import * as Haptics from 'expo-haptics';
+import { UserDataContext } from '../utils/UserDataContext';
+import Purchases from "react-native-purchases";
+import RevenueCatUI, {PAYWALL_RESULT} from "react-native-purchases-ui";
+import {GetCustomerInformation, InitRC} from "../utils/Revenuecat";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function IntroScreen({ navigation }) {
-  const handleTryPress = () => {
+  const {userInfo, setUserInfo, offerings, setOfferings, userCustomer, setUserCustomer} = useContext(UserDataContext);
+  React.useEffect(() => {
+    if(userCustomer!=null && userCustomer?.allExpirationDatesMillis!=null){
+      let expire_time = 0;
+      Object.keys(userCustomer.allExpirationDatesMillis).forEach(key => {
+        const ts = userCustomer.allExpirationDatesMillis[key];
+        if(ts > expire_time){
+          expire_time = ts;
+        }
+      })
+      console.log("userCustomer", userCustomer)
+      console.log("expire", expire_time, Date.now(), Date.now()-expire_time)
+      if (expire_time > Date.now()){
+        navigation.reset({index: 0, routes: [{ name: 'VoicePrompt' }]});
+      }
+    }
+
+    const ListeningCustomInfo = async () => {
+      await Purchases.addCustomerInfoUpdateListener((customerInfo) => {
+        console.log("ListeningCustomInfo: ", customerInfo);
+        setUserCustomer(customerInfo);
+        if(customerInfo?.originalAppUserId){
+          AsyncStorage.setItem("@user", JSON.stringify({uid: customerInfo.originalAppUserId,})).then(()=>{
+            console.log("save user info success")}).catch((err)=>{console.log("save user info err:", err)});
+        }
+        AsyncStorage.setItem("@customer", JSON.stringify(customerInfo)).then(()=>{
+          console.log("save customer success")}).catch((err)=>{console.log("save customer err:", err)});
+      })
+    }
+    ListeningCustomInfo().then(()=>{console.log("ListeningCustomInfo")});
+  }, [])
+
+
+  const DisplayRCPaywall = async(offerings)=>{
+    if (offerings == null){
+      var uid = "";
+      if(userInfo != null && userInfo.uid != null){
+        uid = userInfo.uid;
+      }
+      const off = await InitRC(uid);
+      if(off!=null){
+        setOfferings(off);
+        const custom = await GetCustomerInformation();
+      }else{
+        console.log(222);
+      }
+    }
+    const paywallResult = await RevenueCatUI.presentPaywall({offering:offerings});
+    console.log("paywallResult:", paywallResult);
+    if (
+        paywallResult === PAYWALL_RESULT.PURCHASED ||
+        paywallResult === PAYWALL_RESULT.RESTORED
+    ) {
+      navigation.reset({index: 0, routes: [{ name: 'VoicePrompt' }]});
+      console.log(paywallResult);
+    }
+    if (paywallResult === PAYWALL_RESULT.CANCELLED) {
+      console.log('user_cancel_subscribe_process');
+    }
+  }
+
+  const handleTryPress = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); // Haptic feedback for Try Button
-    navigation.navigate('VoicePrompt');
+    // navigation.navigate('VoicePrompt');
+    try {
+      await DisplayRCPaywall(offerings);
+    } catch (error) {
+      console.error('Before buy Error:', error);
+    }
   };
 
   return (

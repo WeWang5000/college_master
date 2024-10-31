@@ -1,9 +1,43 @@
 // LandingScreen.js
-import React from 'react';
+import React, {useContext} from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import {getLocalCustomer, getLocalUser, UserDataContext} from "../utils/UserDataContext";
 import * as Haptics from 'expo-haptics';
+import {db} from '../utils/Firebase';
+import Config from "react-native-config";
 
 export default function LandingScreen({ navigation }) {
+  const {userInfo, setUserInfo, setUserCustomer, offerings, setOfferings, versionInfo, setVersionInfo } = useContext(UserDataContext);
+  React.useEffect(() => {
+    db.collection("version").doc(Config.MODE).get().then((versionData)=>{
+      //读取firebase version数据
+      if (versionData.exists) {
+        setVersionInfo(versionData.data());
+      }
+    }).catch(e=>{
+      //读取firebase失败，尝试获取缓存数据
+      console.log("get version info err:",e);
+    })
+    getLocalUser().then((userData)=>{
+      if (userData != null) {
+        setUserInfo(userData);
+      }
+    })
+    getLocalCustomer().then((customerData)=>{
+      if (customerData != null) {
+        setUserCustomer(customerData);
+      }
+    })
+  }, [])
+
+  React.useEffect(() => {
+    if(userInfo != null){
+      if(userInfo?.uid != null){
+        navigation.navigate('Intro');
+      }
+    }
+  }, [userInfo]);
+
   const handlePress = () => {
     // Trigger haptic feedback
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);

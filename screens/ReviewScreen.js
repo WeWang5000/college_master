@@ -13,7 +13,7 @@ export default function ReviewScreen({ navigation }) {
   return (
     <View style={styles.container}>
       {/* Displaying the full image */}
-      <Image source={require('../assets/#1College.png')} style={styles.fullImage} />
+      <Image source={require('../assets/1College.png')} style={styles.fullImage} />
 
       {/* Bottom button */}
       <TouchableOpacity style={styles.button} onPress={handleReviewPress}>
