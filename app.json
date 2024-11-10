@@ -13,13 +13,20 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.WK.wishiknew"
+      "bundleIdentifier": "com.WK.wishiknew",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "This app uses the microphone to record audio messages that maybe sent privately to an individual or published publicly for any user to listen to.",
+        "UIBackgroundModes": ["audio"],
+        "LSSupportsOpeningDocumentsInPlace": true,
+        "UIFileSharingEnabled": true
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.WK.wishiknew"
     },
     "web": {
       "favicon": "./assets/favicon.png"

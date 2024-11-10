@@ -10,6 +10,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function IntroScreen({ navigation }) {
   const {userInfo, setUserInfo, offerings, setOfferings, userCustomer, setUserCustomer} = useContext(UserDataContext);
+  const [hasNavigated, setHasNavigated] = React.useState(false);
+
   React.useEffect(() => {
     if(userCustomer!=null && userCustomer?.allExpirationDatesMillis!=null){
       let expire_time = 0;
@@ -21,7 +23,8 @@ export default function IntroScreen({ navigation }) {
       })
       console.log("userCustomer", userCustomer)
       console.log("expire", expire_time, Date.now(), Date.now()-expire_time)
-      if (expire_time > Date.now()){
+      if (expire_time + 86400000  > Date.now()&& !hasNavigated){
+        setHasNavigated(true);
         navigation.reset({index: 0, routes: [{ name: 'VoicePrompt' }]});
       }
     }
@@ -36,6 +39,19 @@ export default function IntroScreen({ navigation }) {
         }
         AsyncStorage.setItem("@customer", JSON.stringify(customerInfo)).then(()=>{
           console.log("save customer success")}).catch((err)=>{console.log("save customer err:", err)});
+
+        let expire_time = 0;
+        Object.keys(customerInfo.allExpirationDatesMillis).forEach(key => {
+          const ts = customerInfo.allExpirationDatesMillis[key];
+          if(ts > expire_time){
+            expire_time = ts;
+          }
+        })
+        console.log("expire", expire_time, Date.now(), Date.now()-expire_time)
+        if (expire_time + 86400000 * 3 > Date.now() && !hasNavigated){
+          setHasNavigated(true);
+          navigation.reset({index: 0, routes: [{ name: 'VoicePrompt' }]});
+        }
       })
     }
     ListeningCustomInfo().then(()=>{console.log("ListeningCustomInfo")});

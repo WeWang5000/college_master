@@ -5,14 +5,18 @@ import {getLocalCustomer, getLocalUser, UserDataContext} from "../utils/UserData
 import * as Haptics from 'expo-haptics';
 import {db} from '../utils/Firebase';
 import Config from "react-native-config";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function LandingScreen({ navigation }) {
   const {userInfo, setUserInfo, setUserCustomer, offerings, setOfferings, versionInfo, setVersionInfo } = useContext(UserDataContext);
   React.useEffect(() => {
+    console.log("Config.MODE", Config.MODE)
     db.collection("version").doc(Config.MODE).get().then((versionData)=>{
       //读取firebase version数据
       if (versionData.exists) {
+        console.log("Version exists", versionData.data());
         setVersionInfo(versionData.data());
+        AsyncStorage.setItem("@version", JSON.stringify(versionData.data())).then();
       }
     }).catch(e=>{
       //读取firebase失败，尝试获取缓存数据

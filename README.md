@@ -14,3 +14,13 @@
   - [ ] websocket cache
 - some issue:
   - [x] can't use Haptics and expo-av (solved)
+
+
+
+```shell
+# https://rnfirebase.io/
+cd ios
+pod install 
+pod install --repo-update
+pod update boost --no-repo-update
+```
