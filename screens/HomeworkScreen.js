@@ -1,6 +1,5 @@
-// screens/HomeworkScreen.js
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Modal, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Modal, TouchableWithoutFeedback, Linking } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as Haptics from 'expo-haptics';
 
@@ -18,9 +17,9 @@ export default function HomeworkScreen({ navigation }) {
     setModalVisible(!isModalVisible);
   };
 
-  const handleOptionPress = (message) => {
+  const openLink = (url) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); // Haptic feedback for modal options
-    alert(message);
+    Linking.openURL(url).catch((err) => alert('Failed to open URL: ' + err.message));
   };
 
   return (
@@ -60,17 +59,14 @@ export default function HomeworkScreen({ navigation }) {
           <View style={styles.modalBackground}>
             <TouchableWithoutFeedback>
               <View style={styles.modalContent}>
-                <TouchableOpacity onPress={() => handleOptionPress('Go Pro')}>
-                  <Text style={styles.modalOption}>📚 Go Pro</Text>
+                <TouchableOpacity onPress={() => openLink('https://iwikweb.web.app/terms')}>
+                  <Text style={styles.modalOption}>📝 Terms</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => handleOptionPress('Contact Support')}>
-                  <Text style={styles.modalOption}>✉️ Contact Support</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => handleOptionPress('Privacy')}>
+                <TouchableOpacity onPress={() => openLink('https://iwikweb.web.app/privacy')}>
                   <Text style={styles.modalOption}>🔒 Privacy</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => handleOptionPress('Terms')}>
-                  <Text style={styles.modalOption}>📝 Terms</Text>
+                <TouchableOpacity onPress={() => openLink('https://iwikweb.web.app/about')}>
+                  <Text style={styles.modalOption}>✉️ Contact Support</Text>
                 </TouchableOpacity>
               </View>
             </TouchableWithoutFeedback>

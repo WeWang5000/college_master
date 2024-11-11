@@ -1,6 +1,6 @@
 // screens/VoicePromptScreen.js
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Image, Animated, Easing } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
 import { sendAudioToProxy } from '../services/openaiService';
@@ -8,17 +8,39 @@ import { sendAudioToProxy } from '../services/openaiService';
 export default function VoicePromptScreen() {
   const [recording, setRecording] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
+  const bounceValue = useState(new Animated.Value(0))[0];
+
+  useEffect(() => {
+    startBouncing();
+  }, []);
+
+  const startBouncing = () => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(bounceValue, {
+          toValue: -10, // Move up by 10 units
+          duration: 300,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.timing(bounceValue, {
+          toValue: 0, // Move back down
+          duration: 500,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  };
 
   const startRecording = async () => {
     try {
-      console.log('Requesting permissions..');
       const { status } = await Audio.requestPermissionsAsync();
       if (status !== 'granted') {
         alert('Permission to access microphone is required!');
         return;
       }
 
-      console.log('Starting recording..');
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: true,
         playsInSilentModeIOS: true,
@@ -29,21 +51,17 @@ export default function VoicePromptScreen() {
       );
       setRecording(recording);
       setIsRecording(true);
-      console.log('Recording started');
     } catch (err) {
       console.error('Failed to start recording', err);
     }
   };
 
   const stopRecording = async () => {
-    console.log('Stopping recording..');
     setIsRecording(false);
     await recording.stopAndUnloadAsync();
 
     const uri = recording.getURI();
-    console.log('Recording stopped and stored at', uri);
 
-    // Convert audio to base64 and send to server
     const audioData = await fetchAudioAsBase64(uri);
     await sendAudioToProxy(audioData);
     
@@ -72,9 +90,13 @@ export default function VoicePromptScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.headerText}>👋 Tell me more about the issue you're facing</Text>
-      <View style={styles.mainCircleContainer}>
-        <Image source={require('../assets/bobby.png')} style={styles.bobbyImage} />
-      </View>
+      
+      {/* Animated Bobby */}
+      <Animated.View style={[styles.mainCircleContainer, { transform: [{ translateY: bounceValue }] }]}>
+        <Image source={require('../assets/smilebobby.jpg')} style={styles.bobbyImage} />
+      </Animated.View>
+
+      {/* Microphone Button */}
       <TouchableOpacity style={styles.micButton} onPress={handleMicPress}>
         <Ionicons name="mic" size={32} color="#ffffff" />
       </TouchableOpacity>
@@ -89,3 +111,4 @@ const styles = StyleSheet.create({
   bobbyImage: { width: 350, height: 350, resizeMode: 'contain', marginTop: 100 },
   micButton: { backgroundColor: '#32CD32', padding: 25, borderRadius: 50, position: 'absolute', bottom: 40 },
 });
+
