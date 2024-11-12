@@ -23,7 +23,7 @@ export default function IntroScreen({ navigation }) {
       })
       console.log("userCustomer", userCustomer)
       console.log("expire", expire_time, Date.now(), Date.now()-expire_time)
-      if (expire_time + 86400000  > Date.now()&& !hasNavigated){
+      if (expire_time + 43200000  > Date.now()&& !hasNavigated){
         setHasNavigated(true);
         navigation.reset({index: 0, routes: [{ name: 'VoicePrompt' }]});
       }
@@ -48,7 +48,7 @@ export default function IntroScreen({ navigation }) {
           }
         })
         console.log("expire", expire_time, Date.now(), Date.now()-expire_time)
-        if (expire_time + 86400000 * 3 > Date.now() && !hasNavigated){
+        if (expire_time + 43200000  > Date.now() && !hasNavigated){
           setHasNavigated(true);
           navigation.reset({index: 0, routes: [{ name: 'VoicePrompt' }]});
         }

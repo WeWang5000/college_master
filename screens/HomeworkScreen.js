@@ -1,6 +1,5 @@
-// screens/HomeworkScreen.js
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Modal, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Modal, TouchableWithoutFeedback, Linking } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as Haptics from 'expo-haptics';
 
@@ -18,66 +17,61 @@ export default function HomeworkScreen({ navigation }) {
     setModalVisible(!isModalVisible);
   };
 
-  const handleOptionPress = (message) => {
+  const openLink = (url) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); // Haptic feedback for modal options
-    alert(message);
+    Linking.openURL(url).catch((err) => alert('Failed to open URL: ' + err.message));
   };
 
   return (
-    <View style={styles.container}>
-      {/* Top-right Settings Button */}
-      <TouchableOpacity style={styles.settingsButton} onPress={toggleModal}>
-        <Icon name="cog" size={24} color="#123524" />
-      </TouchableOpacity>
+      <View style={styles.container}>
+        {/* Top-right Settings Button */}
+        <TouchableOpacity style={styles.settingsButton} onPress={toggleModal}>
+          <Icon name="cog" size={24} color="#123524" />
+        </TouchableOpacity>
+        <Text style={styles.question}>What’s the {'\n'}MOST pressing issue{'\n'} you're facing?</Text>
+        <Text style={styles.hint}>
+          More specific is better!{'\n'}Describe when it happens, what it involves, how it affects you, your thoughts, and how it makes you feel.
+        </Text>
+        {/* Text Input Field */}
+        <TextInput
+            style={styles.input}
+            placeholder="Type your question here"
+            placeholderTextColor="#a9a9a9"
+            value={input}
+            onChangeText={setInput}
+        />
+        {/* Next Button */}
+        <TouchableOpacity style={styles.nextButton} onPress={handleNextPress}>
+          <Text style={styles.nextButtonText}>Next</Text>
+        </TouchableOpacity>
 
-      <Text style={styles.question}>What’s the {'\n'}MOST pressing issue{'\n'} you're facing?</Text>
-      <Text style={styles.hint}>
-        More specific is better!{'\n'}Describe when it happens, what it involves, how it affects you, your thoughts, and how it makes you feel.
-      </Text>
-
-      {/* Text Input Field */}
-      <TextInput
-        style={styles.input}
-        placeholder="Type your question here"
-        placeholderTextColor="#a9a9a9"
-        value={input}
-        onChangeText={setInput}
-      />
-
-      {/* Next Button */}
-      <TouchableOpacity style={styles.nextButton} onPress={handleNextPress}>
-        <Text style={styles.nextButtonText}>Next</Text>
-      </TouchableOpacity>
-
-      {/* Bottom Sheet Modal */}
-      <Modal
-        transparent={true}
-        animationType="slide"
-        visible={isModalVisible}
-        onRequestClose={toggleModal}
-      >
-        <TouchableWithoutFeedback onPress={toggleModal}>
-          <View style={styles.modalBackground}>
-            <TouchableWithoutFeedback>
-              <View style={styles.modalContent}>
-                <TouchableOpacity onPress={() => handleOptionPress('Go Pro')}>
-                  <Text style={styles.modalOption}>📚 Go Pro</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => handleOptionPress('Contact Support')}>
-                  <Text style={styles.modalOption}>✉️ Contact Support</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => handleOptionPress('Privacy')}>
-                  <Text style={styles.modalOption}>🔒 Privacy</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => handleOptionPress('Terms')}>
-                  <Text style={styles.modalOption}>📝 Terms</Text>
-                </TouchableOpacity>
-              </View>
-            </TouchableWithoutFeedback>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal>
-    </View>
+        {/* Bottom Sheet Modal */}
+        <Modal
+            transparent={true}
+            animationType="slide"
+            visible={isModalVisible}
+            onRequestClose={toggleModal}
+        >
+          <TouchableWithoutFeedback onPress={toggleModal}>
+            {/* Only the bottom modal content will be touchable */}
+            <View style={styles.modalWrapper}>
+              <TouchableWithoutFeedback>
+                <View style={styles.modalContent}>
+                  <TouchableOpacity onPress={() => openLink('https://iwikweb.web.app/terms')}>
+                    <Text style={styles.modalOption}>📝 Terms</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => openLink('https://iwikweb.web.app/privacy')}>
+                    <Text style={styles.modalOption}>🔒 Privacy</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => openLink('https://iwikweb.web.app/about')}>
+                    <Text style={styles.modalOption}>✉️ Contact Support</Text>
+                  </TouchableOpacity>
+                </View>
+              </TouchableWithoutFeedback>
+            </View>
+          </TouchableWithoutFeedback>
+        </Modal>
+      </View>
   );
 }
 
@@ -137,10 +131,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontFamily: 'ChalkboardSE-Regular',
   },
-  modalBackground: {
+  modalWrapper: {
     flex: 1,
     justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Dim background for modal
+    backgroundColor: 'transparent', // Make background transparent
   },
   modalContent: {
     backgroundColor: '#123524',

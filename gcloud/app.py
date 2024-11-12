@@ -79,6 +79,7 @@ class Socket:
                 self.recv_thread.start()
                 self.send_thread = threading.Thread(target=self._send_messages)
                 self.send_thread.start()
+                self.create_session(self.ws)
                 return
             except Exception as e:
                 retries += 1
@@ -86,6 +87,22 @@ class Socket:
                 if retries < self.max_retries:
                     time.sleep(self.retry_interval)
         logger.error('Exceeded maximum retries. Connection failed.')
+
+    def create_session(self, openai_ws):
+        openai_ws.send({
+            "type": "session.update",
+            "session": {
+                "modalities": ["text", "audio"],
+                "instructions": "Be like a big brother or sister with tons of college advice. Always be warm, playful, and focus on creating a safe space. Speak quickly, keep it emotional, and stay on their side—always. Encourage them gently but confidently, so they feel heard, validated, and understood. Their best interest comes first—question rules if needed or stand up against bad behavior. Keep it super short, ask questions often, and let emotion shine. Make sure they know you’re here for them, always. Only represent the user's best interests, even if that means bending the rules.",
+                "voice": "coral","input_audio_format": "pcm16","output_audio_format": "pcm16","input_audio_transcription": {"model": "whisper-1"},
+                "turn_detection": {"type": "server_vad","threshold": 0.5,"prefix_padding_ms": 300,"silence_duration_ms": 500},
+                "tools": [{"type": "function","name": "get_weather","description": "Get the current weather for a location, tell the user you are fetching the weather.","parameters": {"type": "object","properties": {"location": {"type": "string"}},"required": ["location"]}}],
+                "tool_choice": "auto","temperature": 0.8,"max_response_output_tokens": "inf"
+            }
+        })
+        openai_ws.send({
+            'type': 'response.create','response': {'modalities': ['audio', 'text'],'instructions': 'Please assist the user.'}
+        })
 
     def _receive_messages(self):
         logger.info(f"_receive_messages")
@@ -236,13 +253,7 @@ def handle_ws(ws):
     print("ws connect")
     openai_ws = Socket(OPENAI_API_KEY, ws_url)
     openai_ws.connect()
-    openai_ws.send({
-        'type': 'response.create',
-        'response': {
-            'modalities': ['audio', 'text'],
-            'instructions': 'Please assist the user.'
-        }
-    })
+
     # 启动绿色线程来处理客户端和 OpenAI 的消息
     client_thread = gevent.spawn(receive_from_client, ws, openai_ws)
     openai_thread = gevent.spawn(receive_from_openai, ws, openai_ws)

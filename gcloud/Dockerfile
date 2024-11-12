@@ -5,7 +5,8 @@ FROM python:3.12-slim
 WORKDIR /app
 
 # 复制当前目录内容到容器中
-COPY . /app
+COPY app.py /app
+COPY requirements.txt /app
 
 # 安装所需依赖项
 RUN pip3 install -r /app/requirements.txt

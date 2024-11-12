@@ -1,29 +1,47 @@
 // screens/VoicePromptScreen.js
 import React, {useContext, useEffect, useRef, useState} from 'react';
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Image, StyleSheet, Text, TouchableOpacity, View, Animated, Easing } from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 import {Audio, InterruptionModeAndroid, InterruptionModeIOS} from 'expo-av';
 import {UserDataContext} from '../utils/UserDataContext';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as FileSystem from 'expo-file-system';
 import base64 from 'react-native-base64';
-import Tts from 'react-native-tts';
-import {franc} from 'franc-min';
 import Toast from 'react-native-root-toast';
-
-// const SOCKET_URL = 'ws://10.0.0.13:8080/ws'; // 修改为你的局域网 IP 地址
 
 export default function VoicePromptScreen({ navigation }) {
     const recording = useRef(null);
     const [isRecording, setIsRecording] = useState(false);
     const { userInfo, setUserInfo, setUserCustomer, versionInfo } = useContext(UserDataContext);
     const [socket, setSocket] = useState(null);
-    const [isConnected, setIsConnected] = useState(false); // 用来管理 WebSocket 连接状态
     const [audioQueue, setAudioQueue] = useState([]);
     const [isPlaying, setIsPlaying] = useState(false);
     const soundRef = useRef(new Audio.Sound());
     const mergedAudioData = useRef(''); // 用于保存合并后的 PCM 音频数据
     const [toastVisible, setToastVisible] = useState(false);
+
+    const bounceValue = useState(new Animated.Value(0))[0];
+    useEffect(() => {
+        startBouncing();
+    }, []);
+    const startBouncing = () => {
+        Animated.loop(
+            Animated.sequence([
+                Animated.timing(bounceValue, {
+                    toValue: -10, // Move up by 10 units
+                    duration: 300,
+                    easing: Easing.inOut(Easing.ease),
+                    useNativeDriver: true,
+                }),
+                Animated.timing(bounceValue, {
+                    toValue: 0, // Move back down
+                    duration: 500,
+                    easing: Easing.inOut(Easing.ease),
+                    useNativeDriver: true,
+                }),
+            ])
+        ).start();
+    };
 
     const showToast = (message) => {
         // 显示 Toast，默认 2 秒后消失
@@ -42,7 +60,6 @@ export default function VoicePromptScreen({ navigation }) {
             setToastVisible(false);
         }, 5000); // 2000 毫秒 = 2 秒
     };
-
 
     const recordingOptions = {
         ios: {
@@ -65,63 +82,13 @@ export default function VoicePromptScreen({ navigation }) {
             bitRate: 128000,
         },
     };
-    // 根据语言代码设置 TTS 语言
-    const setTTSLanguage = async(text) => {
-        // 根据语言代码设置 react-native-tts 的语言
-        // 'zh': 'zh-CN', 'en': 'en-US', 'es': 'es-ES', 'fr': 'fr-FR', 'de': 'de-DE', 'ja': 'ja-JP', 'ko': 'ko-KR', //中文 英文 西班牙语 法语 德语 日语 韩语
-        const languageMap = {// 中文（普通话）英文 西班牙语 法语 德语 日语 韩语
-            'cmn': 'zh-CN', 'eng': 'en-US', 'spa': 'es-ES', 'fra': 'fr-FR', 'deu': 'de-DE', 'jpn': 'ja-JP', 'kor': 'ko-KR',
-        };
-        // 设置语言，如果语言不在映射表中，默认使用英文
-        const detectedLanguage = franc(text);
-        const ttsLanguage = languageMap[detectedLanguage] || 'en-US';
-        console.log('检测到的语言:', detectedLanguage, ttsLanguage);
-        await Tts.setDefaultLanguage(ttsLanguage);
-        Tts.addEventListener('tts-progress', () => {});
-    };
-
-    React.useEffect(()=>{
-        Tts.setDefaultRate(0.6).then(); // 设置语速
-        Tts.setDefaultPitch(0.8).then(); // 设置音调
-    }, []);
-
-    // 播放音频函数
-    const playText =async (text) => {
-        await setTTSLanguage(text);
-        if (text.trim().length > 0) {
-            await Tts.stop(); // 停止当前播放（如果有）
-            Tts.speak(text); // 播放文本
-        } else {
-            alert('请输入文本');
-        }
-    };
-
-    // useEffect(() => {
-    //     // 请求麦克风权限
-    //     const requestPermission = async () => {
-    //         try {
-    //             const result = await (Platform.OS === 'ios'
-    //                 ? request(PERMISSIONS.IOS.MICROPHONE)
-    //                 : request(PERMISSIONS.ANDROID.RECORD_AUDIO));
-    //
-    //             if (result !== RESULTS.GRANTED) {
-    //                 const permission = await request(PERMISSIONS.IOS.MICROPHONE);
-    //                 if (permission !== RESULTS.GRANTED) {
-    //                     Alert.alert('Permission Denied', 'Permission to access microphone is required!');
-    //                 }
-    //             }
-    //         } catch (err) {
-    //             console.error('Permission request error', err);
-    //             Alert.alert('Permission request error', err.message);
-    //         }
-    //     };
-    //     requestPermission();
-    // }, []);
 
     const initSocket = async() => {
         if(socket==null && versionInfo?.chat_url != null){
-            const ws = new WebSocket(versionInfo?.chat_url);
-            console.log("connect:",versionInfo?.chat_url);
+            const SOCKET_URL = versionInfo?.chat_url;
+            // const SOCKET_URL = 'ws://192.168.1.122:8080/ws'; // 修改为你的局域网 IP 地址
+            const ws = new WebSocket(SOCKET_URL);
+            console.log("connect:",SOCKET_URL);
             ws.onopen = () => {
                 console.log('WebSocket connected');
                 ws.send(JSON.stringify({ type: 'connect' }));
@@ -163,7 +130,6 @@ export default function VoicePromptScreen({ navigation }) {
         if (userInfo != null && userInfo.uid !== null) {
             uid = userInfo.uid;
         }
-        // initSocket().then();
     }, []);
 
     const signOut = async () => {
@@ -180,7 +146,6 @@ export default function VoicePromptScreen({ navigation }) {
             console.warn('A recording is already in progress. Stopping the ongoing recording...');
             await stopRecording();
         }
-
         try {
             console.log('Requesting permissions..');
             const { status } = await Audio.requestPermissionsAsync();
@@ -252,96 +217,33 @@ export default function VoicePromptScreen({ navigation }) {
         }
     };
 
-    const playAudioQueue = async () => {
-        if (audioQueue.length === 0 || recording.current != null || isPlaying) {
-            setIsPlaying(false);
-            return;
-        }
-        const base64Audio = audioQueue[0]; // 获取队列中的第一个音频
-        setAudioQueue(prevQueue => prevQueue.slice(1)); // 从队列中移除第一个音频
-
-        try {
-            // 生成临时文件路径
-            const audioPath = `${FileSystem.cacheDirectory}${Date.now()}audio.wav`;
-            // 删除文件以防文件存在残留
-            await FileSystem.deleteAsync(audioPath, { idempotent: true });
-            // 将 base64 编码的音频写入文件
-            await FileSystem.writeAsStringAsync(audioPath, base64Audio, { encoding: FileSystem.EncodingType.Base64 });
-            // 检查文件内容是否正确
-            const fileInfo = await FileSystem.getInfoAsync(audioPath);
-            if (!fileInfo.exists) {
-                console.error("Audio file does not exist:", audioPath);
-                return;
-            }
-            // 加载并播放音频
-            // 使用缓存对象实例
-            const sound =  soundRef.current;
-            await sound.unloadAsync(); // 卸载当前音频，准备加载新音频
-            await sound.loadAsync({ uri: audioPath });
-            await sound.setIsMutedAsync(false);
-            await sound.setVolumeAsync(1.0); // 设置音量
-            await sound.replayAsync(); // 使用 replayAsync() 代替 playAsync()
-            // await sound.playAsync();
-
-            await new Promise((resolve) => {
-                sound.setOnPlaybackStatusUpdate(status => {
-                    if (status.isLoaded) {
-                        if (status?.didJustFinish) {
-                            console.log('播放状态:', status);
-                            sound.setOnPlaybackStatusUpdate(null); // 移除状态更新监听器
-                            // 播放完删除文件
-                            FileSystem.deleteAsync(audioPath, { idempotent: true }).then(()=>{
-                                console.log("delete audioPath:",audioPath);
-                            });
-                            setIsPlaying(false);
-                            resolve();
-                        }
-                    } else {
-                        console.log('播放错误:', status.error);
-                        setIsPlaying(false);
-                    }
-                });
-            });
-        } catch (error) {
-            console.error('Error playing audio:', error);
-        } finally {
-            setIsPlaying(false);
-        }
-    };
     const playAudioQueue2 = async () => {
         if (audioQueue.length === 0 || recording.current != null || isPlaying) {
             setIsPlaying(false);
             return;
         }
-
         // 合并 audioQueue 中的所有片段为一个 Base64 字符串
         const base64Audio = audioQueue.join('');
         setAudioQueue([]); // 清空队列
-
         try {
             // 将合并后的 Base64 PCM 数据添加 WAV header
             const pcmDataList = [base64Audio]; // 传入 PCM 数据列表
             const wavBase64Data = addWavHeaderToPcmList(pcmDataList, 1, 2, 24000);
-
             // 生成临时文件路径
             const audioPath = `${FileSystem.cacheDirectory}${Date.now()}audio.wav`;
             await FileSystem.deleteAsync(audioPath, { idempotent: true }); // 确保路径干净
-
             // 将 WAV 格式的 Base64 音频写入文件
             await FileSystem.writeAsStringAsync(audioPath, wavBase64Data, { encoding: FileSystem.EncodingType.Base64 });
             const fileInfo = await FileSystem.getInfoAsync(audioPath);
-
             if (!fileInfo.exists) {
                 console.error("Audio file does not exist:", audioPath);
                 return;
             }
-
             // 加载并播放音频
             const sound = soundRef.current;
             await sound.unloadAsync();
             await sound.loadAsync({ uri: audioPath });
             await sound.setVolumeAsync(1.0);
-
             // 播放并监听播放状态
             setIsPlaying(true);
             await sound.playAsync();
@@ -429,9 +331,11 @@ export default function VoicePromptScreen({ navigation }) {
                 <Text style={styles.tryButtonText}>SignOut</Text>
             </TouchableOpacity>
             <Text style={styles.headerText}>👋 Tell me more about the issue you're facing</Text>
-            <View style={styles.mainCircleContainer}>
-                <Image source={require('../assets/bobby.png')} style={styles.bobbyImage} />
-            </View>
+            {/* Animated Bobby */}
+            <Animated.View style={[styles.mainCircleContainer, { transform: [{ translateY: bounceValue }] }]}>
+                <Image source={require('../assets/smilebobby.jpg')} style={styles.bobbyImage} />
+            </Animated.View>
+            {/* Microphone Button */}
             {
                 socket?(<TouchableOpacity
                     style={[styles.micButton, { backgroundColor: isRecording ? '#FF0000' : '#32CD32' }]}
@@ -447,7 +351,6 @@ export default function VoicePromptScreen({ navigation }) {
                     </TouchableOpacity>
                 )
             }
-
         </View>
     );
 }
