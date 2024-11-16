@@ -12,7 +12,10 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSUserTrackingUsageDescription": "Your data will be used to provide you with a better experience and personalized ads."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -22,6 +25,10 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      "expo-tracking-transparency"
+    ],
+    "newArchEnabled": true
   }
 }

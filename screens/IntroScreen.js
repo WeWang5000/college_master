@@ -4,8 +4,9 @@ import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
 export default function IntroScreen({ navigation }) {
-  const handleTryPress = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); // Haptic feedback for Try Button
+  const handleTryPress = async () => {
+    // Trigger medium-intensity haptic feedback
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy); // Heavier haptic feedback for a premium feel
     navigation.navigate('VoicePrompt');
   };
 
@@ -24,8 +25,12 @@ export default function IntroScreen({ navigation }) {
       </View>
 
       {/* Try for 7 Days Button */}
-      <TouchableOpacity style={styles.tryButton} onPress={handleTryPress}>
-        <Text style={styles.tryButtonText}>Try for 7 Days</Text>
+      <TouchableOpacity
+        style={styles.tryButton}
+        onPress={handleTryPress}
+        activeOpacity={0.8} // Slight fade-in effect on press
+      >
+        <Text style={styles.tryButtonText}>Try WishIKnew Pro</Text>
       </TouchableOpacity>
     </View>
   );
@@ -67,9 +72,15 @@ const styles = StyleSheet.create({
     bottom: 40,
     backgroundColor: '#123524',
     paddingVertical: 20,
-    paddingHorizontal: 120,
+    paddingHorizontal: 40, // Reduced padding to fit text within one line
     borderRadius: 25,
     alignItems: 'center',
+    minWidth: 370, // Added minWidth to prevent wrapping
+    shadowColor: '#000', // Subtle shadow for tactile feedback
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 5, // For Android shadow
   },
   tryButtonText: {
     color: '#ffffff',

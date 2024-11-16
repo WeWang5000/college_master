@@ -12,21 +12,25 @@
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/stack": "^6.4.1",
     "axios": "^1.7.7",
-    "expo": "~51.0.28",
-    "expo-av": "~14.0.7",
-    "expo-status-bar": "~1.12.1",
-    "react": "18.2.0",
-    "react-native": "0.74.5",
+    "expo": "^52.0.0",
+    "expo-av": "~15.0.1",
+    "expo-haptics": "~14.0.0",
+    "expo-status-bar": "~2.0.0",
+    "expo-tracking-transparency": "~5.0.0",
+    "react": "18.3.1",
+    "react-native": "0.76.2",
     "react-native-audio-recorder-player": "^3.6.12",
     "react-native-fast-image": "^8.6.3",
     "react-native-haptic-feedback": "^2.3.3",
     "react-native-modal": "^13.0.1",
     "react-native-sound": "^0.11.2",
+    "react-native-tracking-transparency": "^0.1.2",
+    "web-streams-polyfill": "^4.0.0",
     "ws": "^8.18.0",
-    "expo-haptics": "~13.0.1"
+    "expo-store-review": "~8.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.25.2"
   },
   "private": true
 }

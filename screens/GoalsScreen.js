@@ -1,7 +1,7 @@
-// GoalsScreen.js
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView, Alert } from 'react-native';
 import * as Haptics from 'expo-haptics';
+import * as StoreReview from 'expo-store-review';
 
 export default function GoalsScreen({ navigation }) {
   const [selectedGoals, setSelectedGoals] = useState([]);
@@ -20,6 +20,25 @@ export default function GoalsScreen({ navigation }) {
     { id: 11, text: 'Other', icon: '❓' },
   ];
 
+  useEffect(() => {
+    const triggerReviewPrompt = async () => {
+      try {
+        // Show native review prompt
+        if (StoreReview && StoreReview.isAvailable && StoreReview.isAvailable()) {
+          await StoreReview.requestReview();
+          console.log('Native review prompt triggered.');
+        } else {
+          console.log('StoreReview is not available in this environment.');
+          Alert.alert('Review Unavailable', 'Native reviews are only available in standalone builds.');
+        }
+      } catch (error) {
+        console.error('Error triggering review:', error);
+      }
+    };
+
+    triggerReviewPrompt();
+  }, []); // Trigger only when the component mounts
+
   const toggleGoalSelection = (id) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); // Trigger haptic feedback
     setSelectedGoals((prevSelected) =>
@@ -30,7 +49,8 @@ export default function GoalsScreen({ navigation }) {
   };
 
   const handleNextPress = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); // Trigger haptic feedback
+    // Trigger haptic feedback
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     navigation.navigate('Homework');
   };
 
