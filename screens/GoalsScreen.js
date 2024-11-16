@@ -1,7 +1,8 @@
 // GoalsScreen.js
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView,Alert } from 'react-native';
 import * as Haptics from 'expo-haptics';
+import * as StoreReview from 'expo-store-review';
 
 export default function GoalsScreen({ navigation }) {
   const [selectedGoals, setSelectedGoals] = useState([]);
@@ -20,8 +21,26 @@ export default function GoalsScreen({ navigation }) {
     { id: 11, text: 'Other', icon: '❓' },
   ];
 
+  React.useEffect(() => {
+    const triggerReviewPrompt = async () => {
+      try {
+        // Show native review prompt
+        if (await StoreReview.isAvailableAsync()) {
+          await StoreReview.requestReview();
+          console.log('Native review prompt triggered.');
+        } else {
+          console.log('StoreReview is not available in this environment.');
+          // Alert.alert('Review Unavailable', 'Native reviews are only available in standalone builds.');
+        }
+      } catch (error) {
+        console.error('Error triggering review:', error);
+      }
+    };
+    triggerReviewPrompt().then().catch(err => console.log("triggerReviewPrompt error", err));
+  }, []); // Trigger only when the component mounts
+
   const toggleGoalSelection = (id) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); // Trigger haptic feedback
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).then( ); // Trigger haptic feedback
     setSelectedGoals((prevSelected) =>
       prevSelected.includes(id)
         ? prevSelected.filter((goalId) => goalId !== id)
@@ -30,7 +49,7 @@ export default function GoalsScreen({ navigation }) {
   };
 
   const handleNextPress = () => {
-    // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); // Trigger haptic feedback
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).then(); // Trigger haptic feedback
     navigation.navigate('Homework');
   };
 

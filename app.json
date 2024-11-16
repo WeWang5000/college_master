@@ -16,8 +16,8 @@
       "bundleIdentifier": "com.WK.wishiknew",
       "infoPlist": {
         "NSMicrophoneUsageDescription": "This app uses the microphone to record audio messages that maybe sent privately to an individual or published publicly for any user to listen to.",
-        "UIBackgroundModes": ["audio"],
         "LSSupportsOpeningDocumentsInPlace": true,
+        "NSUserTrackingUsageDescription": "Your data will be used to provide you with a better experience and personalized ads.",
         "UIFileSharingEnabled": true
       }
     },
@@ -31,6 +31,23 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "scheme": "wishiknew"
+    "scheme": "wishiknew",
+    "jsEngine": "hermes",
+    "plugins": [
+      [
+        "expo-tracking-transparency",
+        {
+          "userTrackingPermission":  "This identifier will be used to deliver personalized ads to you.",
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ]
+    ]
   }
 }

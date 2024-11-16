@@ -23,4 +23,6 @@ cd ios
 pod install 
 pod install --repo-update
 pod update boost --no-repo-update
+watchman watch-del '/Users/gm/code/javascript/college_master' ; watchman watch-project '/Users/gm/code/javascript/college_master'
+
 ```

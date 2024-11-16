@@ -1,24 +1,42 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Modal, TouchableWithoutFeedback, Linking } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Modal, TouchableWithoutFeedback, Linking, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as Haptics from 'expo-haptics';
+import { requestTrackingPermissionsAsync, getTrackingPermissionsAsync } from 'expo-tracking-transparency';
 
 export default function HomeworkScreen({ navigation }) {
   const [input, setInput] = useState('');
   const [isModalVisible, setModalVisible] = useState(false);
 
+  React.useEffect(() => {
+    const requestTrackingPermission = async () => {
+      const { status } = await getTrackingPermissionsAsync();
+      if (status === 'notDetermined') {
+        const { granted } = await requestTrackingPermissionsAsync();
+        if (granted) {
+          Alert.alert('Thank you!', 'Tracking is enabled.');
+        } else {
+          Alert.alert('Permission Denied', 'You have opted out of tracking.');
+        }
+      } else {
+        console.log(`Tracking permission status: ${status}`);
+      }
+    };
+    requestTrackingPermission().then().catch(err => console.log("requestTrackingPermission error", err));
+  }, []);
+
   const handleNextPress = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); // Haptic feedback for Next button
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).then( ); // Haptic feedback for Next button
     navigation.navigate('Intro');
   };
 
   const toggleModal = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); // Haptic feedback for Settings button
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).then( ); // Haptic feedback for Settings button
     setModalVisible(!isModalVisible);
   };
 
   const openLink = (url) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); // Haptic feedback for modal options
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).then( ); // Haptic feedback for modal options
     Linking.openURL(url).catch((err) => alert('Failed to open URL: ' + err.message));
   };
 

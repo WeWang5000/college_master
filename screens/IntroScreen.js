@@ -21,11 +21,13 @@ export default function IntroScreen({ navigation }) {
           expire_time = ts;
         }
       })
-      console.log("userCustomer", userCustomer)
-      console.log("expire", expire_time, Date.now(), Date.now()-expire_time)
-      if (expire_time + 43200000  > Date.now()&& !hasNavigated){
+      console.log("111 userCustomer", userCustomer)
+      console.log("111 expire", expire_time, Date.now(), Date.now()-expire_time)
+      if (expire_time > Date.now()&& !hasNavigated){ //43200000
         setHasNavigated(true);
+        console.log("VoicePrompt111");
         navigation.reset({index: 0, routes: [{ name: 'VoicePrompt' }]});
+        return;
       }
     }
 
@@ -39,22 +41,9 @@ export default function IntroScreen({ navigation }) {
         }
         AsyncStorage.setItem("@customer", JSON.stringify(customerInfo)).then(()=>{
           console.log("save customer success")}).catch((err)=>{console.log("save customer err:", err)});
-
-        let expire_time = 0;
-        Object.keys(customerInfo.allExpirationDatesMillis).forEach(key => {
-          const ts = customerInfo.allExpirationDatesMillis[key];
-          if(ts > expire_time){
-            expire_time = ts;
-          }
-        })
-        console.log("expire", expire_time, Date.now(), Date.now()-expire_time)
-        if (expire_time + 43200000  > Date.now() && !hasNavigated){
-          setHasNavigated(true);
-          navigation.reset({index: 0, routes: [{ name: 'VoicePrompt' }]});
-        }
       })
     }
-    ListeningCustomInfo().then(()=>{console.log("ListeningCustomInfo")});
+    ListeningCustomInfo().then(()=>{console.log("ListeningCustomInfo")}).catch(err => console.log("ListeningCustomInfo error", err));
   }, [])
 
 
@@ -64,31 +53,34 @@ export default function IntroScreen({ navigation }) {
       if(userInfo != null && userInfo.uid != null){
         uid = userInfo.uid;
       }
-      const off = await InitRC(uid);
-      if(off!=null){
-        setOfferings(off);
-        const custom = await GetCustomerInformation();
-      }else{
-        console.log(222);
+      try {
+        const [off, custom] = await Promise.all([InitRC(uid), GetCustomerInformation()]);
+        if (off != null) {
+          setOfferings(off);
+        } else {
+          console.log('Failed to initialize RevenueCat');
+        }
+      } catch (error) {
+        console.error('Error initializing RevenueCat:', error);
       }
     }
-    const paywallResult = await RevenueCatUI.presentPaywall({offering:offerings});
-    console.log("paywallResult:", paywallResult);
-    if (
-        paywallResult === PAYWALL_RESULT.PURCHASED ||
-        paywallResult === PAYWALL_RESULT.RESTORED
-    ) {
-      navigation.reset({index: 0, routes: [{ name: 'VoicePrompt' }]});
-      console.log(paywallResult);
-    }
-    if (paywallResult === PAYWALL_RESULT.CANCELLED) {
-      console.log('user_cancel_subscribe_process');
+    try {
+      const paywallResult = await RevenueCatUI.presentPaywall({ offering: offerings });
+      if (paywallResult === PAYWALL_RESULT.PURCHASED || paywallResult === PAYWALL_RESULT.RESTORED) {
+        console.log("VoicePrompt222");
+        navigation.reset({ index: 0, routes: [{ name: 'VoicePrompt' }] });
+      }
+      if (paywallResult === PAYWALL_RESULT.CANCELLED) {
+        console.log('User canceled subscribe process');
+      }
+    } catch (error) {
+      console.error('Error displaying paywall:', error);
     }
   }
 
   const handleTryPress = async () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); // Haptic feedback for Try Button
-    // navigation.navigate('VoicePrompt');
+    // Trigger medium-intensity haptic feedback
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy); // Heavier haptic feedback for a premium feel
     try {
       await DisplayRCPaywall(offerings);
     } catch (error) {
@@ -109,10 +101,12 @@ export default function IntroScreen({ navigation }) {
           style={styles.circleImage}
         />
       </View>
-
-      {/* Try for 7 Days Button */}
-      <TouchableOpacity style={styles.tryButton} onPress={handleTryPress}>
-        <Text style={styles.tryButtonText}>Try for 7 Days</Text>
+      <TouchableOpacity
+          style={styles.tryButton}
+          onPress={handleTryPress}
+          activeOpacity={0.8} // Slight fade-in effect on press
+      >
+        <Text style={styles.tryButtonText}>Try WishIKnew Pro</Text>
       </TouchableOpacity>
     </View>
   );
@@ -154,7 +148,7 @@ const styles = StyleSheet.create({
     bottom: 40,
     backgroundColor: '#123524',
     paddingVertical: 20,
-    paddingHorizontal: 120,
+    paddingHorizontal: 40, // Reduced padding to fit text within one line
     borderRadius: 25,
     alignItems: 'center',
   },
