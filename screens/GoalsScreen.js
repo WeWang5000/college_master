@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   goalButtonSelected: {
-    backgroundColor: '#cde6d0',
+    backgroundColor: '#e8f0e3',
     borderColor: '#123524',
     borderWidth: 2,
   },
