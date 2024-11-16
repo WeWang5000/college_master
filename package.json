@@ -13,9 +13,11 @@
     "@react-navigation/stack": "^6.4.1",
     "axios": "^1.7.7",
     "expo": "^52.0.0",
+    "expo-application": "~6.0.1",
     "expo-av": "~15.0.1",
     "expo-haptics": "~14.0.0",
     "expo-status-bar": "~2.0.0",
+    "expo-store-review": "~8.0.0",
     "expo-tracking-transparency": "~5.0.0",
     "react": "18.3.1",
     "react-native": "0.76.2",
@@ -26,8 +28,7 @@
     "react-native-sound": "^0.11.2",
     "react-native-tracking-transparency": "^0.1.2",
     "web-streams-polyfill": "^4.0.0",
-    "ws": "^8.18.0",
-    "expo-store-review": "~8.0.0"
+    "ws": "^8.18.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2"

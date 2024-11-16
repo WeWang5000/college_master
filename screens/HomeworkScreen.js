@@ -1,31 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Modal, TouchableWithoutFeedback, Linking, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Modal, TouchableWithoutFeedback, Linking, Alert, Platform } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as Haptics from 'expo-haptics';
-import { requestTrackingPermissionsAsync, getTrackingPermissionsAsync } from 'expo-tracking-transparency';
+import { requestTrackingPermission } from 'react-native-tracking-transparency';
+import { getTrackingPermissionsAsync, requestTrackingPermissionsAsync } from 'expo-tracking-transparency';
 
 export default function HomeworkScreen({ navigation }) {
   const [input, setInput] = useState('');
   const [isModalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
-    const requestTrackingPermission = async () => {
-      const { status } = await getTrackingPermissionsAsync();
-
-      if (status === 'notDetermined') {
-        const { granted } = await requestTrackingPermissionsAsync();
-        if (granted) {
-          Alert.alert('Thank you!', 'Tracking is enabled.');
+    const requestTrackingPermissionAsync = async () => {
+      try {
+        const { status } = await requestTrackingPermissionsAsync();
+        if (status === 'granted') {
+          console.log('Tracking permission granted');
         } else {
-          Alert.alert('Permission Denied', 'You have opted out of tracking.');
+          console.log('Tracking permission denied');
         }
-      } else {
-        console.log(`Tracking permission status: ${status}`);
+      } catch (error) {
+        console.error('Error requesting tracking permission:', error);
       }
     };
-
-    requestTrackingPermission();
+  
+    requestTrackingPermissionAsync();
   }, []);
+  
 
   const handleNextPress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); // Haptic feedback for Next button

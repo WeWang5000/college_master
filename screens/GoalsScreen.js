@@ -21,23 +21,11 @@ export default function GoalsScreen({ navigation }) {
   ];
 
   useEffect(() => {
-    const triggerReviewPrompt = async () => {
-      try {
-        // Show native review prompt
-        if (StoreReview && StoreReview.isAvailable && StoreReview.isAvailable()) {
-          await StoreReview.requestReview();
-          console.log('Native review prompt triggered.');
-        } else {
-          console.log('StoreReview is not available in this environment.');
-          Alert.alert('Review Unavailable', 'Native reviews are only available in standalone builds.');
-        }
-      } catch (error) {
-        console.error('Error triggering review:', error);
-      }
-    };
-
-    triggerReviewPrompt();
-  }, []); // Trigger only when the component mounts
+    // Check if the Store Review is available and then request a review
+    if (StoreReview.isAvailableAsync()) {
+      StoreReview.requestReview();
+    }
+  }, []);
 
   const toggleGoalSelection = (id) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); // Trigger haptic feedback
