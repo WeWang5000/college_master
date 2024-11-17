@@ -1,6 +1,5 @@
-// GoalsScreen.js
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView,Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView, Alert } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import * as StoreReview from 'expo-store-review';
 
@@ -21,23 +20,14 @@ export default function GoalsScreen({ navigation }) {
     { id: 11, text: 'Other', icon: '❓' },
   ];
 
-  React.useEffect(() => {
-    const triggerReviewPrompt = async () => {
-      try {
-        // Show native review prompt
-        if (await StoreReview.isAvailableAsync()) {
-          await StoreReview.requestReview();
-          console.log('Native review prompt triggered.');
-        } else {
-          console.log('StoreReview is not available in this environment.');
-          // Alert.alert('Review Unavailable', 'Native reviews are only available in standalone builds.');
-        }
-      } catch (error) {
-        console.error('Error triggering review:', error);
+  useEffect(() => {
+    // Check if the Store Review is available and then request a review
+    StoreReview.isAvailableAsync().then((result) =>{
+      if (result) {
+        StoreReview.requestReview().then();
       }
-    };
-    triggerReviewPrompt().then().catch(err => console.log("triggerReviewPrompt error", err));
-  }, []); // Trigger only when the component mounts
+    })
+  }, []);
 
   const toggleGoalSelection = (id) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).then( ); // Trigger haptic feedback
@@ -54,34 +44,34 @@ export default function GoalsScreen({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-        <Text style={styles.question}>What problem are you facing?</Text>
-        
-        {/* Render Goals as Buttons */}
-        <View style={styles.goalsContainer}>
-          {goals.map((goal) => (
-            <TouchableOpacity
-              key={goal.id}
-              style={[
-                styles.goalButton,
-                selectedGoals.includes(goal.id) && styles.goalButtonSelected,
-              ]}
-              onPress={() => toggleGoalSelection(goal.id)}
-            >
-              <Text style={styles.goalText}>
-                {goal.icon} {goal.text}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+      <SafeAreaView style={styles.container}>
+        <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+          <Text style={styles.question}>What problem are you facing?</Text>
 
-        {/* Next Button */}
-        <TouchableOpacity style={styles.nextButton} onPress={handleNextPress}>
-          <Text style={styles.nextButtonText}>Next</Text>
-        </TouchableOpacity>
-      </ScrollView>
-    </SafeAreaView>
+          {/* Render Goals as Buttons */}
+          <View style={styles.goalsContainer}>
+            {goals.map((goal) => (
+                <TouchableOpacity
+                    key={goal.id}
+                    style={[
+                      styles.goalButton,
+                      selectedGoals.includes(goal.id) && styles.goalButtonSelected,
+                    ]}
+                    onPress={() => toggleGoalSelection(goal.id)}
+                >
+                  <Text style={styles.goalText}>
+                    {goal.icon} {goal.text}
+                  </Text>
+                </TouchableOpacity>
+            ))}
+          </View>
+
+          {/* Next Button */}
+          <TouchableOpacity style={styles.nextButton} onPress={handleNextPress}>
+            <Text style={styles.nextButtonText}>Next</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </SafeAreaView>
   );
 }
 
@@ -122,7 +112,7 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   goalButtonSelected: {
-    backgroundColor: '#cde6d0',
+    backgroundColor: '#e8f0e3',
     borderColor: '#123524',
     borderWidth: 2,
   },

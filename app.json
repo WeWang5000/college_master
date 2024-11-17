@@ -17,7 +17,7 @@
       "infoPlist": {
         "NSMicrophoneUsageDescription": "This app uses the microphone to record audio messages that maybe sent privately to an individual or published publicly for any user to listen to.",
         "LSSupportsOpeningDocumentsInPlace": true,
-        "NSUserTrackingUsageDescription": "Your data will be used to provide you with a better experience and personalized ads.",
+        "NSUserTrackingUsageDescription": "This app uses device identifiers to track marketing attribution and app usage.  Your data is kept confidential and is not shared with any 3rd parties or advertising partners.",
         "UIFileSharingEnabled": true
       }
     },

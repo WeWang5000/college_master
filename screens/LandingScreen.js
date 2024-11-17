@@ -6,6 +6,7 @@ import * as Haptics from 'expo-haptics';
 import {db} from '../utils/Firebase';
 import Config from "react-native-config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {GetCustomerInformation, InitRC} from "../utils/Revenuecat";
 
 export default function LandingScreen({ navigation }) {
   const {userInfo, setUserInfo, setUserCustomer, offerings, setOfferings, versionInfo, setVersionInfo } = useContext(UserDataContext);
@@ -35,11 +36,29 @@ export default function LandingScreen({ navigation }) {
   }, [])
 
   React.useEffect(() => {
-    if(userInfo != null){
-      if(userInfo?.uid != null){
-        navigation.navigate('Intro');
+    const initializeData = async () => {
+      if (userInfo != null) {
+        if (userInfo?.uid != null) {
+          navigation.navigate('Intro');
+        } else {
+          userInfo.uid = Date.now().toString();
+        }
       }
-    }
+
+      if (offerings == null) {
+        try {
+          const [off, custom] = await Promise.all([InitRC(userInfo?.uid), GetCustomerInformation()]);
+          if (off != null) {
+            setOfferings(off);
+          } else {
+            console.log('Failed to initialize RevenueCat');
+          }
+        } catch (error) {
+          console.error('Error initializing RevenueCat:', error);
+        }
+      }
+    };
+    initializeData().then().catch(err => console.log("initializeData error", err));
   }, [userInfo]);
 
   const handlePress = () => {
