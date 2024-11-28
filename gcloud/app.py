@@ -80,16 +80,16 @@ class Socket:
                 self.send_thread = threading.Thread(target=self._send_messages)
                 self.send_thread.start()
                 self.create_session(self.ws)
-                return
+                return True
             except Exception as e:
                 retries += 1
-                logger.error(f'Error during WebSocket connection: {e}. Retrying {retries}/{self.max_retries}...')
+                logger.error(f'Error during WebSocket connection: {traceback.format_exc()}. Retrying {retries}/{self.max_retries}...')
                 if retries < self.max_retries:
                     time.sleep(self.retry_interval)
         logger.error('Exceeded maximum retries. Connection failed.')
 
     def create_session(self, openai_ws):
-        openai_ws.send({
+        openai_ws.send(json.dumps({
             "type": "session.update",
             "session": {
                 "modalities": ["text", "audio"],
@@ -99,10 +99,10 @@ class Socket:
                 "tools": [{"type": "function","name": "get_weather","description": "Get the current weather for a location, tell the user you are fetching the weather.","parameters": {"type": "object","properties": {"location": {"type": "string"}},"required": ["location"]}}],
                 "tool_choice": "auto","temperature": 0.8,"max_response_output_tokens": "inf"
             }
-        })
-        openai_ws.send({
+        }))
+        openai_ws.send(json.dumps({
             'type': 'response.create','response': {'modalities': ['audio', 'text'],'instructions': 'Please assist the user.'}
-        })
+        }))
 
     def _receive_messages(self):
         logger.info(f"_receive_messages")
@@ -116,7 +116,7 @@ class Socket:
                 self._reconnect()
                 break
             except Exception as e:
-                logger.error(f'Error receiving message: {e}')
+                logger.error(f'Error receiving message: {traceback.format_exc()}')
         logger.info('Exiting WebSocket receiving thread.')
 
     def _send_messages(self):
@@ -135,7 +135,7 @@ class Socket:
                 logger.error('WebSocket connection closed. Attempting to reconnect...')
                 self._reconnect()
             except Exception as e:
-                logger.error(f'Error sending message: {e}')
+                logger.error(f'Error sending message: {traceback.format_exc()}')
 
     def _reconnect(self):
         self.ws = None
@@ -178,7 +178,7 @@ def send_audio_in_chunks(ws, audio_data, chunk_size=2048000):
             'type': 'input_audio_buffer.append',
             'audio': base64.b64encode(chunk).decode(),
         })
-        logger.info(f"send delta")
+        logger.info(f"send delta:{base64.b64encode(chunk).decode()}")
 
 def receive_from_client(ws, openai_ws):
     while not ws.closed:
@@ -252,7 +252,10 @@ def receive_from_openai(ws, openai_ws):
 def handle_ws(ws):
     print("ws connect")
     openai_ws = Socket(OPENAI_API_KEY, ws_url)
-    openai_ws.connect()
+    res = openai_ws.connect()
+    if not res:
+        ws.close()
+        return
 
     # 启动绿色线程来处理客户端和 OpenAI 的消息
     client_thread = gevent.spawn(receive_from_client, ws, openai_ws)

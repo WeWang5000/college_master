@@ -52,6 +52,15 @@ export default function VoicePromptScreen({ navigation }) {
             animation: true,
             hideOnPress: true,
             delay: 0,
+            containerStyle: {
+                backgroundColor: '#FFFDD0',
+                borderRadius: 10,
+                padding: 10,
+            },
+            textStyle: {
+                color: '#313513',
+                fontSize: 16,
+            },
         });
 
         // 设置定时器隐藏 Toast

@@ -37,25 +37,27 @@ export default function LandingScreen({ navigation }) {
 
   React.useEffect(() => {
     const initializeData = async () => {
-      if (userInfo != null) {
-        if (userInfo?.uid != null) {
-          navigation.navigate('Intro');
-        } else {
-          userInfo.uid = Date.now().toString();
-        }
+      var uid = Date.now().toString();
+      if (userInfo != null && userInfo.uid != null) {
+        uid = userInfo.uid;
       }
-
       if (offerings == null) {
         try {
-          const [off, custom] = await Promise.all([InitRC(userInfo?.uid), GetCustomerInformation()]);
+          const off = await InitRC(uid);
           if (off != null) {
+            console.log('Failed to initialize RevenueCat:',off);
             setOfferings(off);
+            const custom = await GetCustomerInformation();
+            setUserCustomer(custom);
           } else {
             console.log('Failed to initialize RevenueCat');
           }
         } catch (error) {
           console.error('Error initializing RevenueCat:', error);
         }
+      }
+      if (userInfo?.uid != null) {
+        navigation.navigate('Intro');
       }
     };
     initializeData().then().catch(err => console.log("initializeData error", err));
